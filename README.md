@@ -17,7 +17,7 @@ Step 3: Model Quantization
 poetry run python -m deepcompressor.app.diffusion.ptq \
     configs/models/CenKreChroA40.yaml configs/svdquant/int4.yaml configs/svdquant/fast.yaml \
     --eval-benchmarks MJHQ \
-    --eval-num-samples 1024 \
+    --eval-num-samples 256 \
     --save-model checkpoint/int4 \
     --smooth-proj-outputs-device cuda \
     --smooth-attn-outputs-device cuda \
@@ -32,4 +32,16 @@ poetry run python -m deepcompressor.app.diffusion.ptq \
     --enable-smooth true \   
     --enable-cache true \
     --cache-root /workspace/deepcompressor/cache
+```
+Step 4: Deployment
+
+```
+poetry run python -m deepcompressor.backend.nunchaku.convert \
+  --quant-path /PATH/TO/CHECKPOINT/DIR \
+  --output-root /PATH/TO/OUTPUT/ROOT \
+  --model-name MODEL_NAME
+```
+Then merge. You need a config.json and comfy_config.json for the model. 
+```
+poetry run python -m nunchaku.merge_safetensors -i /workspace/deepcompressor/outputs/[PROJECT}-o  /workspace/deepcompressor/outputs/merged
 ```
