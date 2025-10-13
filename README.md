@@ -42,6 +42,7 @@ poetry run python -m deepcompressor.backend.nunchaku.convert \
   --model-name MODEL_NAME
 ```
 Then merge. You need a config.json and comfy_config.json for the model. 
+https://nunchaku.tech/docs/nunchaku/python_api/nunchaku.merge_safetensors.html
 ```
 poetry run python -m nunchaku.merge_safetensors -i /workspace/deepcompressor/outputs/[PROJECT}-o  /workspace/deepcompressor/outputs/merged
 ```
