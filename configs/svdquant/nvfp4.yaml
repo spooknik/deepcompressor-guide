@@ -1,0 +1,39 @@
+quant:
+  wgts:
+    dtype: sfp4_e2m1_all
+    group_shapes:
+    - - -1
+      - -1
+    - - 1
+      - 16
+      - 1
+      - 1
+      - 1
+    scale_dtypes:
+    - null
+    - sfp8_e4m3_nan
+  ipts:
+    static: false
+    dtype: sfp4_e2m1_all
+    group_shapes:
+    - - 1
+      - 16
+      - 1
+      - 1
+      - 1
+    scale_dtypes:
+    - sfp8_e4m3_nan
+  enable_extra_wgts: true
+  extra_wgts:
+    dtype: sint4
+    group_shapes:
+    - - 1
+      - 64
+      - 1
+      - 1
+      - 1
+    scale_dtypes:
+    - null
+    includes:
+    - transformer_norm
+    - transformer_add_norm

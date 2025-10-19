@@ -1,0 +1,76 @@
+pipeline:
+  name: CenKreChro # Name of your model
+  path: Tiwaz/CenKreChro # Huggingface Repo
+  dtype: torch.bfloat16
+
+eval:
+  num_steps: 25 # Steps
+  guidance_scale: 1 # CFG Scale
+  protocol: fmeuler{num_steps}-g{guidance_scale}
+  num_samples: 128
+  gen_root: "{output}/{job}"
+  ref_root: baselines/{dtype}/{model}/{protocol}
+  control_root: "benchmarks"
+  gt_stats_root: benchmarks/stats
+  benchmarks:
+    - "MJHQ"
+quant:
+  calib:
+    batch_size: 32
+    path: datasets/torch.bfloat16/CenKreChro/fmeuler25-g1/qdiff/s128
+  
+  wgts:
+    calib_range:
+      element_batch_size: 128
+      sample_batch_size: 32  # Reduced from 16
+      element_size: 512
+      sample_size: -1
+      
+    low_rank:
+      sample_batch_size: 32  # Reduced from 16
+      sample_size: -1
+      
+    skips: 
+    - embed
+    - resblock_shortcut
+    - resblock_time_proj
+    - transformer_proj_in
+    - transformer_proj_out
+    - down_sample
+    - up_sample
+    
+  ipts:
+    calib_range:
+      element_batch_size: 128
+      sample_batch_size: 32
+      element_size: 512
+      sample_size: -1
+      
+    skips: 
+    - embed
+    - resblock_shortcut
+    - resblock_time_proj
+    - transformer_proj_in
+    - transformer_proj_out
+    - transformer_norm
+    - transformer_add_norm
+    - down_sample
+    - up_sample
+    
+  opts:
+    calib_range:
+      element_batch_size: 128
+      sample_batch_size: 32
+      element_size: 512
+      sample_size: -1
+      
+  smooth:
+    proj:
+      element_batch_size: 32
+      sample_batch_size: 32
+      element_size: -1
+      sample_size: -1
+      
+    attn:
+      sample_batch_size: 32
+      sample_size: -1

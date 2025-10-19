@@ -1,0 +1,8 @@
+quant:
+  wgts:
+    enable_kernel_gptq: true
+    kernel_gptq:
+      damp_percentage: 0.01
+      block_size: 128
+      num_inv_tries: 250
+      hessian_block_size: 512

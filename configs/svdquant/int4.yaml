@@ -1,0 +1,25 @@
+quant:
+  wgts:
+    dtype: sint4
+    group_shapes:
+    - - 1
+      - 64
+      - 1
+      - 1
+      - 1
+    scale_dtypes:
+    - null
+  ipts:
+    static: false
+    dtype: sint4
+    group_shapes:
+    - - 1
+      - 64
+      - 1
+      - 1
+      - 1
+    scale_dtypes:
+    - null
+    allow_unsigned: true
+pipeline:
+  shift_activations: true
