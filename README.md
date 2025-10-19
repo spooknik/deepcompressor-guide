@@ -1,7 +1,5 @@
 # Deepcompressor Configs
 
-**VERY WIP**
-
 This is a repo that aims to document the process for creating SVDQuants using [Deepcompressor](https://github.com/nunchaku-tech/deepcompressor). The Nunchaku team did an excellent job with the project, but I found a practical guide was lacking.
 
 Here is [a link to my HuggingFace](https://huggingface.co/spooknik) with SVDQuants I have already prepared.
