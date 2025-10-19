@@ -9,6 +9,7 @@ This is a repo that aims to document the process for creating SVDQuants using [D
 - SVDQaunts take a lot of compute time. For a Flux.1 Dev model it can take around 24-28 per quant.
 - You cannot do this on a consumer GPU, you need a lot of VRAM, it can be done on 48GB, but it's slow and low quality. Ideally you want 80GB or even better 96GB. 
     - I have had good luck with the RTX 6000 Pro cards, they are 96gb and much cheaper than H100.
+    - Don't skip on a weak CPU, single core performance matters a lot. 
 - Cloud GPU providers like Runpod or Vast.ai are good choices. Keep in mind the cost, 24 hours x hourly price of your cloud instance. 
 
 ## 1: Setup
