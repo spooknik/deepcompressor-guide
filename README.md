@@ -4,17 +4,37 @@
 
 This is a repo that aims to document the process for creating SVDQuants using [Deepcompressor](https://github.com/nunchaku-tech/deepcompressor). The Nunchaku team did an excellent job with the project, but I found a practical guide was lacking.
 
-0. Considerations
+## 0. Considerations
 
-- SVDQaunts take a lot of GPU compute time. For a Flux.1 Dev model it can take around 60 hours of compute time to make int4 and nvfp4 versions.
-- A lot VRAM, it can be done on 48GB, but it's about twice or 3 times as fast on a card with 96GB because we can use large batch sizes. 
+- SVDQaunts take a lot of compute time. For a Flux.1 Dev model it can take around 24-28 per quant.
+- You cannot do this on a consumer GPU, you need a lot of VRAM, it can be done on 48GB, but it's slow and low quality. Ideally you want 80GB or even better 96GB. 
+    - I have had good luck with the RTX 6000 Pro cards, they are 96gb and much cheaper than H100.
+- Cloud GPU providers like Runpod or Vast.ai are good choices. Keep in mind the cost, 24 hours x hourly price of your cloud instance. 
 
-Step 1: Evaluation Baselines Preparation
+## 1: Setup
 
-Deepcompressor will sample the unquantized version of the model to have a reference (baseline) to make an evaluation against the quantized. This is a good thing because we'll know objectively how the quantized version of the model performs. 
+I have made a setup script to prepare the environment for deepcompressor.
 
-I limited the samples to 256 images, the default is 5000, Nunchaku's examples were using both 256 and 1024. The higher the number the more accurate the comparison. But the longer the compute time. 256 images takes around 1.5 to 2 hours. 
+So in bash run:
 
+```bash
+cd /workspace # or where you wish to run it
+wget script.sh
+chmod +x script.sh
+./script.sh
+```
+Let it run, it takes around 5 minutes depending on network speed. Towards the end it will ask if you want to login with HuggingFace and there you just need to paste your API key. 
+
+Folder structure
+
+workspace
+
+
+## 2: Evaluation Baselines Preparation
+
+Deepcompressor will sample the BF16/F16 version of the model to have a reference (baseline) to make an evaluation against the quantized, you can skip this to save around 2-3 hours, but then you'll not really have an objective measurement of how good your quant is. 
+
+I limited the samples to 256 images, the default is 5000, Nunchaku's examples were using both 256 and 1024. The higher the number the more accurate the comparison. 128 also works, just the result might be even less accurate. 
 
 
 ```bash
@@ -22,8 +42,9 @@ poetry run python -m deepcompressor.app.diffusion.ptq configs/models/[CONFIG] --
 ```
 
 
+## 3: Calibration Dataset Preparation
 
-Step 2: Calibration Dataset Preparation
+
 ```bash
 poetry run python -m deepcompressor.app.diffusion.dataset.collect.calib \
     configs/models/[CONFIG] configs/collect/qdiff.yaml
@@ -31,9 +52,9 @@ poetry run python -m deepcompressor.app.diffusion.dataset.collect.calib \
 
 
 
-Step 3: Model Quantization
+## 4.
 
-Now the long part (around 24 hours).  
+Now the long part (around 20 hours).  
 
 ```bash
 poetry run python -m deepcompressor.app.diffusion.ptq \
@@ -55,16 +76,17 @@ poetry run python -m deepcompressor.app.diffusion.ptq \
     --enable-cache true \
     --cache-root /workspace/deepcompressor/cache
 ```
-Step 4: Deployment
+5. Deployment
 
 ```
 poetry run python -m deepcompressor.backend.nunchaku.convert \
   --quant-path /PATH/TO/CHECKPOINT/DIR \
   --output-root /PATH/TO/OUTPUT/ROOT \
   --model-name MODEL_NAME
+
+
 ```
+
+6. Merging
 Then merge. You need a config.json and comfy_config.json for the model. 
-https://nunchaku.tech/docs/nunchaku/python_api/nunchaku.merge_safetensors.html
-```
-poetry run python -m nunchaku.merge_safetensors -i /workspace/deepcompressor/outputs/[PROJECT}-o  /workspace/deepcompressor/outputs/merged
-```
+
