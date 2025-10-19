@@ -4,9 +4,16 @@
 
 This is a repo that aims to document the process for creating SVDQuants using [Deepcompressor](https://github.com/nunchaku-tech/deepcompressor). The Nunchaku team did an excellent job with the project, but I found a practical guide was lacking.
 
+Here is [a link to my HuggingFace](https://huggingface.co/spooknik) with SVDQuants I have already prepared.
+
+If you find my work useful:
+
+<a href='https://ko-fi.com/B0B21MPRDT' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 ## 0. Considerations
 
 - SVDQaunts take a lot of compute time. For a Flux.1 Dev model it can take around 24-28 per quant.
+- Currently only Flux.1, SANA and PixArt are supported. It's expected Qwen and WAN will be released at some point.
 - You cannot do this on a consumer GPU, you need a lot of VRAM, it can be done on 48GB, but it's slow and low quality. Ideally you want 80GB or even better 96GB. 
     - I have had good luck with the RTX 6000 Pro cards, they are 96gb and much cheaper than H100.
     - Don't skip on a weak CPU, single core performance matters a lot. 
