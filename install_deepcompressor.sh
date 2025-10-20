@@ -53,11 +53,16 @@ echo "  1. Update system and install prerequisites"
 echo "  2. Install Poetry"
 echo "  3. Install PyTorch 2.8.0"
 echo "  4. Clone DeepCompressor"
-echo "  5. Fix dependencies"
-echo "  6. Set exact package versions"
-echo "  7. Install HuggingFace tools"
-echo "  8. Install all packages"
-echo "  9. Setup HuggingFace authentication"
+echo "  5. Download configs folder from deepcompressor-guide"
+echo "  6. Fix dependencies"
+echo "  7. Set exact package versions"
+echo "  8. Install HuggingFace tools"
+echo "  9. Install PyAV"
+echo "  10. Configure Poetry"
+echo "  11. Install all packages"
+echo "  12. Verify installation"
+echo "  13. Setup environment variables"
+echo "  14. Create test script"
 echo ""
 read -p "Press Enter to continue or Ctrl+C to cancel..."
 
@@ -156,9 +161,50 @@ fi
 print_success "Repository ready at: $(pwd)"
 
 # ============================================================================
-# STEP 5: Fix pyproject.toml Bug
+# STEP 5: Download Configs Folder
 # ============================================================================
-print_step "5/13" "Fixing pyproject.toml bug (pyav → av)..."
+print_step "5/14" "Downloading configs folder from deepcompressor-guide..."
+
+TEMP_CONFIGS_DIR="${WORKSPACE_DIR}/temp_configs_repo"
+CONFIGS_DEST="${WORKSPACE_DIR}/deepcompressor/configs"
+
+# Remove temp directory if it exists
+if [ -d "$TEMP_CONFIGS_DIR" ]; then
+    rm -rf "$TEMP_CONFIGS_DIR"
+fi
+
+# Clone with sparse checkout to get only the configs folder
+print_success "Cloning configs folder..."
+git clone --depth 1 --filter=blob:none --sparse \
+    https://github.com/spooknik/deepcompressor-guide \
+    "$TEMP_CONFIGS_DIR"
+
+cd "$TEMP_CONFIGS_DIR"
+git sparse-checkout set configs
+
+# Verify configs folder exists
+if [ ! -d "${TEMP_CONFIGS_DIR}/configs" ]; then
+    print_error "Configs folder not found in repository"
+    exit 1
+fi
+
+# Copy configs folder to deepcompressor directory
+print_success "Copying configs folder to ${CONFIGS_DEST}..."
+cp -r "${TEMP_CONFIGS_DIR}/configs" "$CONFIGS_DEST"
+
+# Clean up temp directory
+cd "${WORKSPACE_DIR}"
+rm -rf "$TEMP_CONFIGS_DIR"
+
+print_success "Configs folder downloaded and placed in: $CONFIGS_DEST"
+
+# Return to deepcompressor directory
+cd ${WORKSPACE_DIR}/deepcompressor
+
+# ============================================================================
+# STEP 6: Fix pyproject.toml Bug
+# ============================================================================
+print_step "6/14" "Fixing pyproject.toml bug (pyav → av)..."
 
 # Check if already fixed
 if grep -q "^av = " pyproject.toml; then
@@ -176,9 +222,9 @@ if grep -q "^av = " pyproject.toml; then
 fi
 
 # ============================================================================
-# STEP 6: Set Exact Package Versions
+# STEP 7: Set Exact Package Versions
 # ============================================================================
-print_step "6/13" "Setting exact package versions in pyproject.toml..."
+print_step "7/14" "Setting exact package versions in pyproject.toml..."
 
 # Set datasets version
 if grep -q "^datasets = " pyproject.toml; then
@@ -201,9 +247,9 @@ fi
 print_success "Package versions configured"
 
 # ============================================================================
-# STEP 7: Install HuggingFace Tools
+# STEP 8: Install HuggingFace Tools
 # ============================================================================
-print_step "7/13" "Installing HuggingFace Hub and Transfer tools..."
+print_step "8/14" "Installing HuggingFace Hub and Transfer tools..."
 
 pip3 install huggingface_hub hf_transfer --break-system-packages
 
@@ -212,9 +258,9 @@ python3 -c "import huggingface_hub; print(f'  huggingface_hub version: {huggingf
 print_success "HuggingFace tools installed successfully"
 
 # ============================================================================
-# STEP 8: Install PyAV
+# STEP 9: Install PyAV
 # ============================================================================
-print_step "8/13" "Installing PyAV (av package)..."
+print_step "9/14" "Installing PyAV (av package)..."
 
 pip3 install av>=13.0.0 --break-system-packages
 
@@ -223,17 +269,17 @@ python3 -c "import av; print(f'  PyAV version: {av.__version__}')"
 print_success "PyAV installed successfully"
 
 # ============================================================================
-# STEP 9: Configure Poetry
+# STEP 10: Configure Poetry
 # ============================================================================
-print_step "9/13" "Configuring Poetry..."
+print_step "10/14" "Configuring Poetry..."
 
 poetry config virtualenvs.in-project true
 print_success "Poetry configured to use in-project virtualenvs"
 
 # ============================================================================
-# STEP 10: Install DeepCompressor Dependencies
+# STEP 11: Install DeepCompressor Dependencies
 # ============================================================================
-print_step "10/13" "Installing DeepCompressor with Poetry (this may take several minutes)..."
+print_step "11/14" "Installing DeepCompressor with Poetry (this may take several minutes)..."
 
 cd ${WORKSPACE_DIR}/deepcompressor
 
@@ -250,9 +296,9 @@ poetry install
 print_success "DeepCompressor installed"
 
 # ============================================================================
-# STEP 11: Verify Installation
+# STEP 12: Verify Installation
 # ============================================================================
-print_step "11/13" "Verifying installation..."
+print_step "12/14" "Verifying installation..."
 
 poetry run python << 'EOF'
 import torch
@@ -285,9 +331,9 @@ EOF
 print_success "Installation verified"
 
 # ============================================================================
-# STEP 12: Set Environment Variables
+# STEP 13: Set Environment Variables
 # ============================================================================
-print_step "12/13" "Setting environment variables..."
+print_step "13/14" "Setting environment variables..."
 
 # Check if already set
 if grep -q "PYTORCH_CUDA_ALLOC_CONF" ~/.bashrc; then
@@ -322,9 +368,9 @@ mkdir -p /workspace/hf_cache
 print_success "Created HuggingFace cache directory"
 
 # ============================================================================
-# STEP 13: Create Test Script
+# STEP 14: Create Test Script
 # ============================================================================
-print_step "13/13" "Creating test script..."
+print_step "14/14" "Creating test script..."
 
 cat > ${WORKSPACE_DIR}/deepcompressor/test_installation.py << 'TESTEOF'
 #!/usr/bin/env python3
