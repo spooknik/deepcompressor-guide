@@ -42,12 +42,14 @@ Check out [my HuggingFace profile](https://huggingface.co/spooknik) for ready-to
 
 **GPU (VRAM):**
 - **Minimum:** 48GB (slow, lower quality results)
-- **Recommended:** 200GB Container Size
 - **Optimal:** 96GB
 - **My pick:** RTX Pro 6000 Blackwell (96GB, more affordable than H100)
 
 **CPU:**
 - Don't skimp here! Single-core performance matters a lot for this workload.
+
+**Storage:**
+- 200GB Container Size or more
 
 **Time:**
 - Expect **18-20 hours per quantization** for Flux.1 Dev models
