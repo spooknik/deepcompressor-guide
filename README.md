@@ -31,7 +31,7 @@ Check out [my HuggingFace profile](https://huggingface.co/spooknik) for ready-to
 ## Before You Start
 
 ### Supported Models
-- **Flux.1** (Dev and Schnell)
+- **Flux.1** (Dev and Schnell) - This guide covers this
 - **SANA**
 - **PixArt**
 - Coming soon: Qwen, WAN
@@ -42,9 +42,9 @@ Check out [my HuggingFace profile](https://huggingface.co/spooknik) for ready-to
 
 **GPU (VRAM):**
 - **Minimum:** 48GB (slow, lower quality results)
-- **Recommended:** 80GB
+- **Recommended:** 200GB Container Size
 - **Optimal:** 96GB
-- **My pick:** RTX 6000 Ada (96GB, more affordable than H100)
+- **My pick:** RTX Pro 6000 Blackwell (96GB, more affordable than H100)
 
 **CPU:**
 - Don't skimp here! Single-core performance matters a lot for this workload.
@@ -141,7 +141,7 @@ The `fast.yaml` speeds up quantization but may reduce quality slightly. Combine 
 # Standard quality (slow)
 configs/svdquant/int4.yaml
 
-# Faster processing (recommended for testing)
+# Faster processing (recommended)
 configs/svdquant/int4.yaml configs/svdquant/fast.yaml
 ```
 
@@ -152,7 +152,6 @@ configs/svdquant/int4.yaml configs/svdquant/fast.yaml
 **Recommended but not required.** This step samples the full-precision model to create reference metrics for comparison.
 
 **Time:** 2-3 hours
-**Skip if:** You're on a tight budget or testing
 
 ```bash
 cd /workspace/deepcompressor
@@ -168,6 +167,7 @@ poetry run python -m deepcompressor.app.diffusion.ptq \
 - Allows objective quality comparison after quantization
 
 **Sample count options:**
+- `4` - Speedrun, don't care about evaluation results
 - `128` - Fast, less accurate comparison
 - `256` - Balanced (my recommendation)
 - `1024` - More accurate, takes longer
@@ -380,7 +380,7 @@ Some models require accepting terms on their HuggingFace page first.
 
 ### Quantization Takes Forever
 
-- This is normal! Flux.1 takes 18-20 hours
+- This is normal! Flux.1 takes 18-20 hours for quality quantization
 - Ensure you're using a powerful CPU and not in powersave (check with `htop`)
 - Make sure GPU isn't throttling (check temps with `nvidia-smi`)
 - Consider using `fast.yaml` for quicker (but potentially lower quality) results
@@ -391,6 +391,14 @@ Some models require accepting terms on their HuggingFace page first.
 2. **Remove `fast.yaml`:** Use full grid search (20 grids instead of 5)
 3. **Check your hardware:** 48GB VRAM produces lower quality than 80GB+
 4. **Try different quantization method:** Test `nvfp4.yaml` instead of `int4.yaml`
+
+### Does this work on Chroma?
+
+Sadly no. Chroma was developed from Flux Schnell but the model archtecture is different and Deepcompressor / Nunchaku don't support it. We need to wait for someone to add support. 
+
+I made an attempt with help from others to merge Chroma info Flux, but the results were subpar and not worth persueing. 
+
+A very good alternative is [CenKreChro](https://civitai.com/models/1836040/cenkrechro), a Krea + Chroma merge.
 
 ---
 
