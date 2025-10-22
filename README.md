@@ -293,7 +293,7 @@ Download `transformer_blocks.safetensors` and `unquantized_layers.safetensors
 
 Create this workflow and run it (or drag this image into ComfyUI)
 
-
+![Alt text](images/NunchakuModelMerger.PNG)
 
 Now in `ComfyUI\models\unet` you have the finished merged SVDQuant! 
 
